@@ -22,7 +22,6 @@ __pycache__/
 
 # Ignorar pastas de uploads
 uploads/
-static/uploads/
 
 # Ignorar arquivos e pastas temporárias
 tmp/
@@ -30,9 +29,6 @@ temp/
 *.tmp
 
 # Ignorar imagens e outros arquivos binários que não são de versão
-*.png
-*.jpg
-*.jpeg
 *.gif
 
 # Ignorar arquivos de compilação e distribuição
