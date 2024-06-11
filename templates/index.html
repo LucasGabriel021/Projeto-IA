@@ -4,24 +4,79 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Upload de Imagem</title>
+
+    <!-- CDN Tailwind -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Config Tailwind -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        "laranja": "#EF9C66",
+                        "laraja-hover": "#FFA681",
+                        "amarelo": "#FCDC94"
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <!-- CDN Fontawesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
-<body>
-    <h1>Upload de Imagem para Previsão</h1>
-    <form action="/upload" method="post" enctype="multipart/form-data">
-        <label for="file">Escolha uma imagem JPEG:</label>
-        <input type="file" id="file" name="file" accept="image/jpeg">
-        <button type="submit">Enviar</button>
-    </form>
-    <div id="result">
-        {% if result %}
-            <h2>Resultado da Previsão:</h2>
-            <img src="{{ result['image_url'] }}" alt="Uploaded Image">
-            <ul>
-                {% for prob, label in result['predictions'] %}
-                    <li>{{ prob }} - {{ label }}</li>
-                {% endfor %}
-            </ul>
-        {% endif %}
-    </div>
+<body class="bg-amarelo">
+    <main class="w-full flex justify-center items-center rounded-md p-8">
+        <div class="w-9/12 md:w-8/12 lg:w-2/5 bg-slate-100 flex flex-col items-center gap-y-4 p-8 shadow-lg">
+            <div class="flex flex-col items-center gap-y-2">
+                <img src="{{ url_for('sstatic', filename='images/icone.png') }}" alt="Projeto de IA">
+                <h1 class="text-xl md:text-2xl font-bold text-center">Descubra a raça de seu animal!</h1>
+            </div>
+            <div>
+                <form action="/upload" method="post" enctype="multipart/form-data">
+                    <div class="flex flex-col gap-y-2 items-center">
+                        <label for="file" class="text-base md:text-md font-normal text-slate-700">Faça o upload de uma imagem JPG</label>
+                        <div class="flex gap-x-2">
+                            <div class="cursor-pointer bg-slate-200 text-slate-700 flex px-4 py-1 md:px-8 md:py-2 justify-center items-center gap-x-2 text-md md:text-lg font-bold h-auto md:h-10 rounded-lg hover:bg-slate-300">
+                                <label for="file" class="cursor-pointer">Upload</label>
+                                <span class="cursor-pointer"><i class="fa-solid fa-cloud-arrow-up"></i></span>
+                                <input type="file" id="file" name="file" accept="image/jpeg" class="hidden" required onchange="mostrarMensagem()">
+                            </div>
+                            <div>
+                                <button type="submit" class="cursor-pointer text-laranja bg-amarelo px-4 py-1 md:px-8 md:py-2 text-md md:text-lg font-bold h-10 rounded-lg hover:bg-orange-400 hover:text-amarelo">Enviar</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="exibirMensagem" class="hidden text-green-500 text-center font-medium text-md md:text-lg"></div>
+                </form>
+            </div>
+            <div id="result" class="w-full flex flex-col items-center">
+                {% if result %}
+                    <h2 class="text-lg font-medium text-center">Resultado da Previsão:</h2>
+                    <img src="{{ result['image_url'] }}" alt="Uploaded Image" class="mt-2 w-9/12 md:w-2/4 h-auto rounded-md shadow-md">
+                    <ul class="mt-2">
+                        {% for prob, label in result['predictions'] %}
+                            <li class="text-base md:text-md font-normal text-slate-700"><span class="text-md md:text-lg font-bold text-laranja">{{ prob }} </span>- {{ label }}</li>
+                        {% endfor %}
+                    </ul>
+                {% endif %}
+            </div>
+        </div>
+    </main>
+
+    <script>
+        function mostrarMensagem() {
+            console.log("Função foi executada!");
+            const inputFile = document.getElementById("file");
+            const mensagem = document.getElementById("exibirMensagem");
+            if(inputFile.files.length > 0) {
+                mensagem.classList.remove("hidden");
+                mensagem.textContent = `Arquivo selecionado: ${inputFile.files[0].name}`;
+            } else {
+                mensagem.classList.add("hidden");
+            }
+        }
+    </script>
 </body>
 </html>

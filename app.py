@@ -1,9 +1,8 @@
-from flask import Flask, request, render_template, redirect, url_for
+from flask import Flask, request, render_template, redirect, url_for, send_from_directory
 from werkzeug.utils import secure_filename
 import os
 from PIL import Image
 import numpy as np
-import matplotlib.pyplot as plt
 from keras.api.models import load_model
 from keras.api.applications.densenet import preprocess_input
 from skimage.io import imread
@@ -12,15 +11,23 @@ app = Flask(__name__)
 UPLOAD_FOLDER = 'uploads/'
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
+# Configuração para servir o diretório de uploads
+@app.route('/uploads/<filename>')
+def uploaded_file(filename):
+    return send_from_directory(app.config['UPLOAD_FOLDER'], filename)
+
+# Configuração para servir o diretório estático
+@app.route('/static/<path:filename>')
+def static_files(filename):
+    return send_from_directory('static', filename)
+
 # Carregue seu modelo aqui
 model = load_model('modelo_raca_caninas.h5')
 
 breed_list = os.listdir("Images/")
 
 # Mapeamento de rótulos
-label_maps_rev = {}
-for i, v in enumerate(breed_list):
-    label_maps_rev.update({i : v})
+label_maps_rev = {i: v for i, v in enumerate(breed_list)}
 
 @app.route('/')
 def index():
@@ -59,7 +66,8 @@ def previsao_foto(filepath):
             predictions.append((f"{probs[0][idx]*100:.2f}%", label))
         except KeyError:
             predictions.append((f"{probs[0][idx]*100:.2f}%", f"Label {idx} não mapeado"))
-    return {'image_url': url_for('static', filename=filepath), 'predictions': predictions}
+    image_url = f"/uploads/{os.path.basename(filepath)}"
+    return {'image_url': image_url, 'predictions': predictions}
 
 if __name__ == '__main__':
     app.run(debug=True)
